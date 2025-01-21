@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meiqiu.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.meiqiu.entity.User">
+        <id column="id" property="id" />
+        <result column="nick_name" property="nickName" />
+        <result column="phone" property="phone" />
+        <result column="password" property="password" />
+        <result column="email" property="email" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="is_delete" property="isDelete" />
+    </resultMap>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into user (nick_name, phone, password, email, create_user, update_user)
+        values (#{user.nickName}, #{user.phone}, #{user.password}, #{user.email}, #{user.createUser},
+                #{user.updateUser})
+    </insert>
+
+    <select id="queryAll" resultType="com.meiqiu.entity.User">
+        select *
+        from user
+        where is_delete = 0
+    </select>
+
+    <select id="queryByPhone" resultType="com.meiqiu.entity.User">
+        select *
+        from user
+        where phone = #{phone,jdbcType=VARCHAR}
+          and is_delete = 0
+    </select>
+
+</mapper>

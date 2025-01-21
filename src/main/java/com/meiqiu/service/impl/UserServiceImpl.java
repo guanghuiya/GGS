@@ -1,20 +1,21 @@
 package com.meiqiu.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.meiqiu.base.ResultCode;
 import com.meiqiu.base.ServiceException;
+import com.meiqiu.config.RedisCacheService;
 import com.meiqiu.dto.LoginDTO;
+import com.meiqiu.dto.RegisterUserDTO;
 import com.meiqiu.entity.User;
+import com.meiqiu.mapper.UserMapper;
 import com.meiqiu.service.UserService;
 import com.meiqiu.vo.LoginVo;
 import com.meiqiu.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -23,57 +24,43 @@ import java.util.Map;
  * @Date 2025/1/17
  * @Time 14:20
  */
-@Service
+
 @Slf4j
-public class UserServiceImpl implements UserService {
+@Service
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private RedisCacheService redisCacheService;
+
+    public static final String TOKEN_PREFIX = "token:";
 
     /**
      * 登录
      */
     @Override
     public LoginVo login(LoginDTO loginDTO) {
-        //模拟数据库用户数据
-        List<User> userList = new ArrayList<>();
-        String initPass = "123456";
-        //将密码进行md5加密
-        String md5Str = DigestUtil.md5Hex(initPass);
-        for (int i = 1; i <= 10; i++) {
-            User user = User.builder()
-                    .id(Long.parseLong(String.valueOf(i)))
-                    .nickName("nickName-" + i)
-                    .phone("phone-" + i)
-                    .password(md5Str)
-                    .build();
-            userList.add(user);
-        }
-
-        //模拟用户token数据,key为token，value为手机号
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("token-phone-1-000000000001", "phone-1");
-        tokenMap.put("token-phone-2-000000000002", "phone-2");
-        tokenMap.put("token-phone-3-000000000003", "phone-3");
-
-        //业务逻辑开始
         try {
-            //根据用户名和加密密码查询用户信息
-            String md5Pass = DigestUtil.md5Hex(loginDTO.getPassword());
-            User user = userList.stream().filter(u -> u.getPhone().equals(loginDTO.getPhone())
-                    && u.getPassword().equals(md5Pass)).findFirst().orElse(null);
+            //用户数据
+            User user = userMapper.queryByPhone(loginDTO.getPhone());
             if (user == null) {
                 throw new ServiceException(ResultCode.USER_ERROR);
             }
-
-            //生成token，放进 token池
-            String token = "token-" + System.currentTimeMillis();
-            tokenMap.put(token, loginDTO.getPhone());
+            //将密码进行md5加密,比对
+            String md5Str = DigestUtil.md5Hex(loginDTO.getPassword());
+            if (!md5Str.equals(user.getPassword())) {
+                throw new ServiceException(ResultCode.USER_ERROR);
+            }
+            //生成 token
+            String token = initToken(user.getPhone());
             //封装返回数据
+            UserVo userVo = new UserVo();
+            BeanUtils.copyProperties(user, userVo);
             return LoginVo.builder()
                     .token(token)
-                    .user(UserVo.builder()
-                            .id(user.getId())
-                            .nickName(user.getNickName())
-                            .phone(user.getPhone())
-                            .build())
+                    .user(userVo)
                     .build();
         } catch (ServiceException e) {
             throw e;
@@ -81,5 +68,50 @@ public class UserServiceImpl implements UserService {
             log.error("登录失败", e);
             throw new ServiceException("登录失败：" + e.getMessage());
         }
+    }
+
+    /**
+     * 生成 token
+     */
+    private String initToken(String phone) {
+        String token = String.valueOf(System.currentTimeMillis());
+        redisCacheService.set(TOKEN_PREFIX + phone, token, 10L);
+        return token;
+    }
+
+    /**
+     * 注册
+     */
+    @Override
+    public LoginVo register(RegisterUserDTO request) {
+        try {
+            //校验手机号
+            User user = userMapper.queryByPhone(request.getPhone());
+            if (user != null) {
+                throw new ServiceException(ResultCode.USER_EXIST);
+            }
+            //保存用户信息
+            user = new User();
+            BeanUtils.copyProperties(request, user);
+            user.setPassword(DigestUtil.md5Hex(request.getPassword()));
+            user.setCreateUser(1);
+            user.setUpdateUser(1);
+            userMapper.save(user);
+
+            //生成 token
+            String token = initToken(user.getPhone());
+            //封装 vo
+            UserVo userVo = new UserVo();
+            BeanUtils.copyProperties(user, userVo);
+            return LoginVo.builder()
+                    .token(token)
+                    .user(userVo)
+                    .build();
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("注册失败", e);
+        }
+        return null;
     }
 }

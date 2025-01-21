@@ -2,6 +2,7 @@ package com.meiqiu.controller;
 
 import com.meiqiu.base.BizResult;
 import com.meiqiu.dto.LoginDTO;
+import com.meiqiu.dto.RegisterUserDTO;
 import com.meiqiu.service.UserService;
 import com.meiqiu.vo.LoginVo;
 import io.swagger.annotations.ApiOperation;
@@ -17,12 +18,21 @@ import javax.validation.Valid;
  * @Time 14:16
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @ApiOperation(value = "用户接口")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ApiOperation(value = "注册")
+    @ResponseBody
+    public BizResult<LoginVo> register(@RequestBody @Valid RegisterUserDTO request) {
+        return BizResult.success(userService.register(request));
+    }
+
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ApiOperation(value = "登录")

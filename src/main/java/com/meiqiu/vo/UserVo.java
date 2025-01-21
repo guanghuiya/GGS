@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @Description 用户返回实体
@@ -24,13 +25,31 @@ public class UserVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键")
-    private Long id;
+    @ApiModelProperty("主键 id")
+    private Integer id;
 
-    @ApiModelProperty(value = "昵称")
+    @ApiModelProperty("昵称")
     private String nickName;
 
-    @ApiModelProperty(value = "手机号")
+    @ApiModelProperty("手机号（登录账号）")
     private String phone;
+
+    @ApiModelProperty("邮箱")
+    private String email;
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("创建人")
+    private Integer createUser;
+
+    @ApiModelProperty("更新时间")
+    private LocalDateTime updateTime;
+
+    @ApiModelProperty("更新人")
+    private Integer updateUser;
+
+    @ApiModelProperty("是否删除 0：否 1：是")
+    private Integer isDelete;
 
 }

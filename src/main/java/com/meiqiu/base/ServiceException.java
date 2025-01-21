@@ -1,7 +1,5 @@
 package com.meiqiu.base;
 
-import lombok.Data;
-
 /**
  * @Description 封装异常信息
  * @Author sgh

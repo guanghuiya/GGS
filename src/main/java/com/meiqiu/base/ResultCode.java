@@ -23,6 +23,7 @@ public enum ResultCode implements Serializable {
     SYSTEM_ERROR("500", "系统出错"),
 
     USER_ERROR("00001", "用户名或密码错误"),
+    USER_EXIST("00002", "当前手机号已注册"),
     ;
 
     private String code;

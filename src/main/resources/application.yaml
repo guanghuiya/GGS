@@ -1,4 +1,45 @@
 server:
   port: 8080
+  servlet:
+    context-path: /api
 
-
+spring:
+  datasource:
+    url: jdbc:mysql://47.96.25.123:3306/my_demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    username: meiqiu
+    password: Meiqiu@123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据源类别
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 初始化连接数、最小空闲、最大活跃连接数
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      # 配置获取连接等待超时的时间，单位是毫秒
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在连接池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开 PSCache，并且制定每个连接上 PSCache 的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的 filters
+      filters: stat,wall,log4j
+      # 打开 mergeSql 功能；记录慢 SQL
+      connectionProperties:
+        druid.stat.slowSqlMillis: 5000
+        druid.stat.logSlowSql: true;
+        druid.stat.mergeSql: true;
+      # 合并多个 DruidDataSource 的监控数据
+      useGlobalDataSourceStat: true
+  redis:
+    host: 47.96.25.123
+    password: root
+    port: 6379
+    database: 1
