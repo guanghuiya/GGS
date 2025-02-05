@@ -5,6 +5,7 @@ import com.meiqiu.dto.LoginDTO;
 import com.meiqiu.dto.RegisterUserDTO;
 import com.meiqiu.service.UserService;
 import com.meiqiu.vo.LoginVo;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/user")
-@ApiOperation(value = "用户接口")
+@Api(tags = "用户")
 public class UserController {
 
     @Autowired

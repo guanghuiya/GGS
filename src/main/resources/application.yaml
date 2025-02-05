@@ -4,6 +4,9 @@ server:
     context-path: /api
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
     url: jdbc:mysql://47.96.25.123:3306/my_demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
     username: meiqiu

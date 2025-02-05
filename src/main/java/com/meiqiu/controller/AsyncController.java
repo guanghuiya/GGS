@@ -2,6 +2,7 @@ package com.meiqiu.controller;
 
 import com.meiqiu.base.BizResult;
 import com.meiqiu.service.AsyncService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/async")
+@Api(tags = "线程")
 public class AsyncController {
 
     @Autowired

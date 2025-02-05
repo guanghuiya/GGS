@@ -1,7 +1,6 @@
 package com.meiqiu.base;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
@@ -16,7 +15,7 @@ import java.util.List;
  * @Date 2025/1/21
  * @Time 15:26
  */
-public class FastAutoGeneratorTest {
+public class FastAutoGenerator {
 
     public static String userDir = System.getProperty("user.dir");
 
@@ -24,8 +23,7 @@ public class FastAutoGeneratorTest {
         List<String> tables = new ArrayList<>();
         tables.add("user");
 
-        //结算管理
-        FastAutoGenerator.create("jdbc:mysql://47.96.25.123:3306/my_demo?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true", "meiqiu", "Meiqiu@123456")
+        com.baomidou.mybatisplus.generator.FastAutoGenerator.create("jdbc:mysql://47.96.25.123:3306/my_demo?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true", "meiqiu", "Meiqiu@123456")
                 .globalConfig(builder -> {
                     builder.author("sgh")
                             .outputDir(userDir + "/src/main/java")    //输出路径(写到java目录)
