@@ -1,8 +1,7 @@
 package com.meiqiu.config.cache;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meiqiu.config.RedisCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * @Description 三级缓存：远程缓存（使用Redis作为示例）
@@ -15,20 +14,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RemoteCache<K, V> {
 
     @Autowired
-    private RedisCacheService redisCacheService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private RedisTemplate<K, V> redisTemplate;
 
     public V get(K key, Class<V> clazz) throws Exception {
-        String valueJson = redisCacheService.get(key.toString());
-        if (valueJson != null) {
-            return objectMapper.readValue(valueJson, clazz);
+        if (clazz == null) {
+            throw new Exception("class is null");
         }
-        return null;
+        if (key == null) {
+            throw new Exception("key is null");
+        }
+        if (redisTemplate == null) {
+            throw new Exception("redisTemplate is null");
+        }
+        if (redisTemplate.opsForValue().get(key.toString()) == null) {
+            return null;
+        }
+        return redisTemplate.opsForValue().get(key.toString());
     }
 
     public void put(K key, V value) throws Exception {
-        String valueJson = objectMapper.writeValueAsString(value);
-        redisCacheService.set(key.toString(), valueJson);
+        redisTemplate.opsForValue().set(key, value);
     }
 }

@@ -12,6 +12,7 @@ import com.meiqiu.config.cache.RemoteCache;
  */
 public class CacheService<K, V> {
 
+
     // 一级缓存：内存缓存，通常使用内存来存储最频繁访问的数据，以提高读取效率。可以使用ConcurrentHashMap等并发集合来实现
     private final MemoryCache<K, V> memoryCache;
 

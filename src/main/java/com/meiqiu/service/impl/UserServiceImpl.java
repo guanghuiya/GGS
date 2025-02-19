@@ -4,7 +4,6 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.meiqiu.base.ResultCode;
 import com.meiqiu.base.ServiceException;
-import com.meiqiu.config.RedisCacheService;
 import com.meiqiu.dto.LoginDTO;
 import com.meiqiu.dto.RegisterUserDTO;
 import com.meiqiu.entity.User;
@@ -15,6 +14,7 @@ import com.meiqiu.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -33,7 +33,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserMapper userMapper;
 
     @Autowired
-    private RedisCacheService redisCacheService;
+    private RedisTemplate<String, String> redisTemplate;
 
     public static final String TOKEN_PREFIX = "token:";
 
@@ -75,7 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private String initToken(String phone) {
         String token = String.valueOf(System.currentTimeMillis());
-        redisCacheService.set(TOKEN_PREFIX + phone, token, 10L);
+        redisTemplate.opsForValue().set(TOKEN_PREFIX + phone, token, 10L);
         return token;
     }
 
