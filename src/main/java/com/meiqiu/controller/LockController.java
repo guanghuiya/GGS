@@ -28,7 +28,7 @@ public class LockController {
     private RedisLock redisLock;
 
     @ApiOperation(value = "扣减库存")
-    @RequestMapping(value = "/deductStock", method = RequestMethod.POST)
+    @RequestMapping(value = "/deductStock", method = RequestMethod.GET)
     @ResponseBody
     public String deductStock() {
         String id = "1";
@@ -36,8 +36,9 @@ public class LockController {
         String lockKey = "product" + id;
         String goodsKey = "goods_" + id;
         String requestId = lockKey + "-" + Thread.currentThread().getId();
-        boolean locked = redisLock.lock(lockKey, requestId, 10);
+        boolean locked = redisLock.lock(lockKey, requestId, 1);
         if (!locked) {
+//            System.out.println("线程：" + Thread.currentThread().getId() + "请稍候再试");
             return "线程：" + Thread.currentThread().getId() + "请稍候再试";
         }
         //获取库存
@@ -48,10 +49,12 @@ public class LockController {
         int currentStock = stock - 1;
         if (currentStock < 0) {
             redisLock.unlock2(lockKey, requestId);
+            System.out.println("线程：" + Thread.currentThread().getId() + "商品：" + goodsKey + "库存不足");
             return "线程：" + Thread.currentThread().getId() + "商品：" + goodsKey + "库存不足";
         }
         redisTemplate.opsForValue().set(goodsKey, currentStock);
         redisLock.unlock2(lockKey, requestId);
+        System.out.println("线程：" + Thread.currentThread().getId() + "商品：" + goodsKey + "扣减库存成功，剩余：" + currentStock);
         return "线程：" + Thread.currentThread().getId() + "商品：" + goodsKey + "扣减库存成功，剩余：" + currentStock;
     }
 
