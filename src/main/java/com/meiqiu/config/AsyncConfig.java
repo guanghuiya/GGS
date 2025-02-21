@@ -6,6 +6,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -38,4 +40,12 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
+
+
+    public ExecutorService initExecutor() {
+        ExecutorService executor = Executors.newFixedThreadPool(4); // 创建一个固定大小的线程池，参数为线程池大小。
+        return executor;
+    }
+
+
 }
